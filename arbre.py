@@ -10,12 +10,18 @@ import pydot
 
 #Initialisation
 data,y=tools.gen_arti(1)
-mytree=tree.DecisionTreeClassifier() #creation d'un arbre de decision
-mytree.max_depth=1 #profondeur maximale de 5
-mytree.min_samples_split=1 #nombre minimal d'exemples dans une feuille
-#Apprentissage
-mytree.fit(data,y)
+N=len(y)
+w_init=[1./N for i in range(0,N)]
 
+def create_tree(data, y, vect_poid=w_init, prof=1, split=1):
+    mytree=tree.DecisionTreeClassifier() #creation d'un arbre de decision
+    mytree.max_depth=1 #profondeur maximale de 5
+    mytree.min_samples_split=1 #nombre minimal d'exemples dans une feuille
+    #Apprentissage
+    mytree.fit(data,y,sample_weight=vect_poid)
+    return mytree
+
+mytree = create_tree(data,y)
 #prediction
 pred=mytree.predict(data)
 print "precision : ", 1.*(pred!=y).sum()/len(y)
