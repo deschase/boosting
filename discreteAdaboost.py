@@ -1,1 +1,2 @@
-from arbre.py import *
+from arbre import *
+from read-files import *
