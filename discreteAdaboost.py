@@ -2,61 +2,60 @@
 from arbre import *
 from readFiles import *
 
-#Données
-nomfichier="database/iris.data"
-data,y=donneData(nomfichier)
+class DiscreteAdaboost:
+    def __init__(self, nbData, nbClassifieur):
+        self.nbdata = nbData
+        self.nbclassifieur = nbClassifieur
+        self.w = [1./nbData for i in range(0,nbData)]
+        self.trees = []
+        self.coefs = []
+        self.errors = []
 
-def discreteAdaboost():
-    # Nombre d'échantillons
-    N=len(y)
-    # Vecteur des poids intial
-    w=[1./N for i in range(0,N)]
-    list_w=[]
-    list_w.append(w)
-    # Nombre de d'arbres
-    M = 10
-    # Liste des arbres et de coefs associés
-    list_arbre = []
-    list_coef = []
-    # Evolution de l'erreur
-    list_erreur = []
-    for m in range(0,M):
-        # On crée et on entraine l'arbre
-        arbre = create_tree(data,y,w)
-        list_arbre.append(arbre)
-        #On calcule l'erreur
-        pred = arbre.predict(data)
-        print(y)
-        vectdiff = []
-        for k in range(0,N):
-            if pred[i] == y[i]:
-                vectdiff.append(0)
+    def fit(self, data, y):
+        for m in range(0,self.nbclassifieur):
+            # On crée et on entraine l'arbre
+            arbre = create_tree(data,y,self.w)
+            self.trees.append(arbre)
+            #On calcule l'erreur
+            pred = arbre.predict(data)
+            vectdiff = []
+            for k in range(0,self.nbdata):
+                if pred[k] == y[k]:
+                    vectdiff.append(0)
+                else:
+                    vectdiff.append(1)
+            erreur = np.dot(self.w,vectdiff)
+            self.errors.append(erreur)
+            # On calcule les coefficients d'importance de l'arbre
+            if erreur == 0:
+                c = 1
+            elif erreur == 1:
+                c = 0
             else:
-                vectdiff.append(1)
-        erreur = np.dot(w,vectdiff)
-        list_erreur.append(erreur)
-        # On calcule les coefficients d'importance de l'arbre
-        if erreur == 0:
-        	c = 1
-       	if erreur == 1:
-       		c = 0
-       	else:
-        	c = math.log((1-erreur)/erreur)
-        list_coef.append(c)
-        # On modifie les poids
-        somme = 0
-        for i in range(0,N):
-            w[i] = w[i]*math.exp(c*vectdiff[i])
-            somme += w[i]
-        for i in range(0,N):
-            w[i] = w[i]/somme
-    results = []
-    for x in range(0,N):
-        resx = 0
-        for j in range(0,M):
-            resx += list_coef[j]*(list_arbre[j].predict(data))[x]
-        results.append(resx)
-    return results
+                c = math.log((1-erreur)/erreur)
+            self.coefs.append(c)
+            # On modifie les poids
+            somme = 0
+            for i in range(0,self.nbdata):
+                self.w[i] = self.w[i]*math.exp(c*vectdiff[i])
+                somme += self.w[i]
+            for i in range(0,self.nbdata):
+                self.w[i] = self.w[i]/somme
+            print(arbre.score(data,y))
 
-discreteAdaboost()
+    def scoretot(self, data, label):
+        results = []
+        for x in range(0,self.nbdata):
+            resx = 0
+            for j in range(0,self.nbclassifieur):
+                resx += self.coefs[j]*(self.trees[j].predict(data))[x]
+            if resx < 0:
+                results.append(-1)
+            else:
+                results.append(1)
+        return np.mean((results == label))
 
+data, y = donneData("database/iris.data")
+ada = DiscreteAdaboost(len(data), 10)
+ada.fit(data,y)
+#print ada.scoretot(data, y)
