@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 import matplotlib.pyplot as plt # module pour les outils graphiques
 import tools # module fourni en TP1
