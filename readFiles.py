@@ -26,9 +26,9 @@ def donneData(nomfichier, nbLabel = 2, colonne = 4, suppress = False, colonneSup
     data2 = np.asarray(data2)
     labelInt = {}
     i = -1
-    for label in labelText:
-        if label not in labelInt:
-            labelInt[label] = i
+    for j in range(len(labelText)-1, - 1, -1):
+        if labelText[j] not in labelInt:
+            labelInt[labelText[j]] = i
             if(i+1 < nbLabel and i != -1):
                 i+=1
             if(i == - 1):
