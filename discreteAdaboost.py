@@ -35,12 +35,12 @@ def discreteAdaboost():
         erreur = np.dot(w,vectdiff)
         list_erreur.append(erreur)
         # On calcule les coefficients d'importance de l'arbre
-        c = log((1-erreur)/erreur)
+        c = math.log((1-erreur)/erreur)
         list_coef.append(c)
         # On modifie les poids
         somme = 0
         for i in range(0,N):
-            w[i] = w[i]*exp(c*vectdiff)
+            w[i] = w[i]*math.exp(c*vectdiff[i])
             somme += w[i]
         for i in range(0,N):
             w[i] = w[i]/somme
@@ -48,7 +48,10 @@ def discreteAdaboost():
     for x in range(0,N):
         resx = 0
         for j in range(0,M):
-            resx += c[j]*(list_arbre[j].predict(data)[x])
+            resx += list_coef[j]*(list_arbre[j].predict(data))[x]
         results.append(resx)
+    print results
     return results
+
+discreteAdaboost()
 
