@@ -1,15 +1,15 @@
 from arbre import *
 from readFiles import *
-import math
 
 class RealAdaboost:
     def __init__(self, nbData, nbClassifieur):
         self.nbdata = nbData
         self.nbclassifieur = nbClassifieur
-        W = np.zeros(data.shape[0])
-        for i in range(data.shape[0]):
-            W[i] = 1/data.shape[0]
+        W = np.zeros(nbData)
+        for i in range(nbData):
+            W[i] = float(1)/float(nbData)
         self.w = W 
+        #print W
         self.trees = []
 
     def fit(self, data, label):
@@ -17,15 +17,25 @@ class RealAdaboost:
             tree = create_tree(data, label, self.w)
             (self.trees).append(tree)
             p = tree.predict_proba(data)
+            print j, ": ", tree.score(data,y)
             summ = 0
             for i in range(self.nbdata):
-            	if(p[i][0] > 0):
-                    self.w[i] = self.w[i]*math.exp(-label[i]* (1/2)* math.log(p[i][1]/(1-p[i][1])))
+            	if(p[i][0] > 0 and p[i][0] < 1):
+                    self.w[i] = self.w[i]*math.exp(-label[i]* (1/2)* math.log(p[i][0]/(1-p[i][0])))
+                   # self.w[i] = 0.5
+                   # print self.w[i]
                 else:
-                	
-                summ += self.w[i]
+                	#print "out"
+                	self.w[i]  = float(1)/float(self.nbdata)
 
-            self.w = self.w/summ
+
+                summ += self.w[i]
+            #print summ
+
+            if(summ != 0):
+                self.w = (1/summ)*(self.w)
+
+            #print self.w
         return 0 
 
     def predict(self, data):
@@ -42,8 +52,8 @@ class RealAdaboost:
         
 data, y = donneData("database/iris.data")
 print y
-ada = RealAdaboost(len(data), 10)
+ada = RealAdaboost(len(data), 100)
 ada.fit(data,y)
-print score(data, y)
+print ada.score(data, y)
         
 
