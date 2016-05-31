@@ -6,12 +6,13 @@ class DiscreteAdaboost:
     def __init__(self, nbData, nbClassifieur):
         self.nbdata = nbData
         self.nbclassifieur = nbClassifieur
-        self.w = [1./nbData for i in range(0,nbData)]
         self.trees = []
         self.coefs = []
         self.errors = []
 
     def fit(self, data, y):
+        longeur = len(data)
+        self.w = [1./longeur for i in range(0,longeur)]
         for m in range(0,self.nbclassifieur):
             # On crée et on entraine l'arbre
             arbre = create_tree(data,y,self.w)
@@ -19,7 +20,7 @@ class DiscreteAdaboost:
             #On calcule l'erreur
             pred = arbre.predict(data)
             vectdiff = []
-            for k in range(0,self.nbdata):
+            for k in range(0,longeur):
                 if pred[k] == y[k]:
                     vectdiff.append(0)
                 else:
@@ -36,7 +37,7 @@ class DiscreteAdaboost:
             self.coefs.append(c)
             # On modifie les poids
             somme = 0
-            for i in range(0,self.nbdata):
+            for i in range(0,longeur):
                 self.w[i] = self.w[i]*math.exp(c*vectdiff[i])
                 somme += self.w[i]
             for i in range(0,self.nbdata):
@@ -59,7 +60,9 @@ class DiscreteAdaboost:
                 res += 1
         return res/float(self.nbdata)
 
-# data, y = donneData("database/wdbc.data",2,1,True,0,True)
-# ada = DiscreteAdaboost(len(data), 10)
-# ada.fit(data,y)
-# print "score final = ", ada.score(data, y)
+data, y = donneData("database/wdbc.data",2,1,True,0,True)
+ada = DiscreteAdaboost(len(data)/2, 10)
+data_moit = data[0:ada.nbdata,:]
+y_moit = y[0:ada.nbdata]
+ada.fit(data_moit,y_moit)
+print "score final = ", ada.score(data, y)
