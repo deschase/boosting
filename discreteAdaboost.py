@@ -43,7 +43,7 @@ class DiscreteAdaboost:
                 self.w[i] = self.w[i]/somme
             print "score",arbre.score(data,y)
 
-    def scoretot(self, data, label):
+    def score(self, data, label):
         results = []
         for x in range(0,self.nbdata):
             resx = 0
@@ -60,7 +60,7 @@ class DiscreteAdaboost:
                 res += 1
         return res/float(n)
 
-data, y = donneData("database/iris.data")
+data, y = donneData("database/wdbc.data",2,1,True,0,True)
 ada = DiscreteAdaboost(len(data), 10)
 ada.fit(data,y)
-print "score final = ", ada.scoretot(data, y)
+print "score final = ", ada.score(data, y)

@@ -34,10 +34,10 @@ def create_tree_logit(data, y, vect_poid=w_init, prof=1, split=1):
 mytree = create_tree(data,y)
 #prediction
 pred=mytree.predict(data)
-print "precision : ", 1.*(pred!=y).sum()/len(y)
+# print "precision : ", 1.*(pred!=y).sum()/len(y)
 
-#ou directement pour la precision :
-print "precision (score) : "  +` mytree.score(data,y)`
+# #ou directement pour la precision :
+# print "precision (score) : "  +` mytree.score(data,y)`
 
 #Importance des variables :
 plt.subplot(1,2,2)
@@ -64,7 +64,7 @@ def affiche_arbre(tree):
                     (tree.tree_.feature[node],tree.tree_.threshold[node],aux(tree.tree_.children_left[node],sep+sepl),
                     tree.tree_.feature[node],tree.tree_.threshold[node],aux(tree.tree_.children_right[node],sep+sepr))
     return aux(0,"")
-print(affiche_arbre(mytree))
+# print(affiche_arbre(mytree))
 # plt.figure()
 # tools.plot_frontiere(data, mytree.predict, 50)
 # tools.plot_data(data,y)
