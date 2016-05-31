@@ -1,70 +1,50 @@
 # -*- coding: utf-8 -*-
 from readFiles import *
+from arbre import *
 
 class LogitBoost:
     def __init__(self, nbData, nbClassifieur):
         self.nbdata = nbData
         self.nbclassifieur = nbClassifieur
+        self.trees = []
         self.w = [1./nbData for i in range(0,nbData)]
         self.z = [0.0 for i in range(0,nbData)]
         self.p = [0.5 for i in range(0,nbData)]
-        sefl.sol = [0.0 for i in range(0,nbData)]
+        self.sol = [0.0 for i in range(0,nbData)]
 
     def fit(self, data, y):
         for m in range(0,self.nbclassifieur):
             # On calcule les z_i et les w_i
             for k in range(0,self.nbdata):
                 y_star = int((y[k] + 1)/2)
-                z[k] = y_star
-                    vectdiff.append(0)
+                if self.p[k] == 1.:
+                    self.z[k] == 0.
                 else:
-                    vectdiff.append(1)
-
-            # On calcule l'erreur
+                    self.z[k] = (y_star-self.p[k])/(self.p[k]*(1-self.p[k]))
+                self.w[k] = self.p[k]*(1-self.p[k])
+            # On fit le classifier
+            arbre = create_tree_logit(data, self.z, self.w)
+            self.trees.append(arbre)
+            # On met à jour la fonction de classement globale et les probabilités
             pred = arbre.predict(data)
-            vectdiff = []
             for k in range(0,self.nbdata):
-                if pred[k] == y[k]:
-                    vectdiff.append(0)
-                else:
-                    vectdiff.append(1)
-            erreur = np.dot(self.w,vectdiff)
-            self.errors.append(erreur)
-            # On calcule les coefficients d'importance de l'arbre
-            if erreur == 0:
-                c = 1
-            elif erreur == 1:
-                c = 0
-            else:
-                c = math.log((1-erreur)/erreur)
-            self.coefs.append(c)
-            # On modifie les poids
-            somme = 0
-            for i in range(0,self.nbdata):
-                self.w[i] = self.w[i]*math.exp(c*vectdiff[i])
-                somme += self.w[i]
-            for i in range(0,self.nbdata):
-                self.w[i] = self.w[i]/somme
-            print "score",arbre.score(data,y)
+                self.sol[k] += 0.5*pred[k]
+            for k in range(0,self.nbdata):
+                self.p[k] = math.exp(self.sol[k])/(math.exp(self.sol[k]) + math.exp(-self.sol[k]))
+            print "score arbre {}".format(m),self.score(data,y)
 
-    def scoretot(self, data, label):
-        results = []
-        for x in range(0,self.nbdata):
-            resx = 0
-            for j in range(0,self.nbclassifieur):
-                resx += self.coefs[j]*(self.trees[j].predict(data))[x]
-            if resx < 0:
-                results.append(-1)
-            else:
-                results.append(1)
-        n = len(label)
+    def score(self, data, label):
         res = 0
-        for i in range(0,n):
-            if results[i] == label[i]:
-                res += 1
-        return res/float(n)
+        for i in range(0,self.nbdata):
+            if self.sol[i] >= 0:
+                if label[i] == 1:
+                    res += 1
+            else:
+                if label[i] == -1:
+                    res += 1
+        return res/float(self.nbdata)
 
 data, y = donneData("database/wdbc.data",2,1,True,0,True)
-ada = DiscreteAdaboost(len(data), 10)
+ada = LogitBoost(len(data), 30)
 ada.fit(data,y)
-print "score final = ", ada.scoretot(data, y)
+print "score final = ", ada.score(data, y)

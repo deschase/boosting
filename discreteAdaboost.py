@@ -53,12 +53,11 @@ class DiscreteAdaboost:
                 results.append(-1)
             else:
                 results.append(1)
-        n = len(label)
         res = 0
-        for i in range(0,n):
+        for i in range(0,self.nbdata):
             if results[i] == label[i]:
                 res += 1
-        return res/float(n)
+        return res/float(self.nbdata)
 
 data, y = donneData("database/wdbc.data",2,1,True,0,True)
 ada = DiscreteAdaboost(len(data), 10)
