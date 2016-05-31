@@ -18,7 +18,7 @@ class RealAdaboost:
             tree = create_tree(data, label, self.w)
             (self.trees).append(tree)
             p = tree.predict_proba(data)
-            #print j, ": ", tree.score(data,y)
+            print j, ": ", tree.score(data,y)
             summ = 0
             for i in range(self.nbdata):
                 if(p[i][0] > 0 and p[i][0] < 1):
@@ -32,14 +32,14 @@ class RealAdaboost:
                 summ += self.w[i]
             #print summ
 
-            #if(summ != 0):
-            self.w = (1/summ)*(self.w)
+            if(summ != 0):
+                self.w = (1/summ)*(self.w)
 
             #print self.w
         return 0 
 
     def predict(self, data):
-        summ = np.zeros(self.nbdata)
+        summ = np.zeros(data.shape[0])
         for i in range(self.nbclassifieur):
             p = self.trees[i].predict_proba(data)
             for j in range(self.nbdata):
@@ -56,12 +56,14 @@ class RealAdaboost:
 
             
 # omfichier, nbLabel = 2, colonne = 4, suppress = False, colonneSup = 0):       
-# data, y = donneData("database/wdbc.data", 2,1, True, 0 )
-# print y
-# ada = RealAdaboost(len(data),800)
-# ada.fit(data,y)
-# print ada.score(data, y)
-       
+data2, y2 = donneData("database/wdbc.data", 2,1, True, 0 )
+print y2
+ada = RealAdaboost(len(data2)/2,600)
+data_moit = data2[0:ada.nbdata,:]
+y_moit = y2[0:ada.nbdata]
+ada.fit(data_moit,y_moit)
+
+print "score final = ", ada.score(data, y)
 
 
 
