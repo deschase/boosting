@@ -1,6 +1,6 @@
 from arbre import *
 from readFiles import *
-
+import random as rd
 class RealAdaboost:
     def __init__(self, nbData, nbClassifieur):
         self.nbdata = nbData
@@ -20,28 +20,35 @@ class RealAdaboost:
             print j, ": ", tree.score(data,y)
             summ = 0
             for i in range(self.nbdata):
-            	if(p[i][0] > 0 and p[i][0] < 1):
-                    self.w[i] = self.w[i]*math.exp(-label[i]* (1/2)* math.log(p[i][0]/(1-p[i][0])))
+                if(p[i][0] > 0 and p[i][0] < 1):
+                    self.w[i] = self.w[i]*math.exp(-label[i]*(float(1)/float(2))*math.log(p[i][1]/(1-p[i][1])))
+                    #print math.exp(-label[i]*(float(1)/float(2))*math.log(p[i][0]/(1-p[i][0])))
                    # self.w[i] = 0.5
                    # print self.w[i]
                 else:
-                	#print "out"
-                	self.w[i]  = float(1)/float(self.nbdata)
+                    print "out"
+                    self.w[i]  = 0#float(1)/float(self.nbdata)
 
 
                 summ += self.w[i]
             #print summ
 
-            if(summ != 0):
-                self.w = (1/summ)*(self.w)
+            #if(summ != 0):
+            self.w = (1/summ)*(self.w)
 
             #print self.w
         return 0 
 
     def predict(self, data):
-        summ = self.trees[0].predict(data)
-        for i in range(1,self.nbclassifieur):
-            summ = summ + self.trees[i].predict(data)
+        summ = np.zeros(self.nbdata)
+        for i in range(self.nbclassifieur):
+            p = self.trees[i].predict_proba(data)
+            for j in range(self.nbdata):
+                if(p[j][0] > 0 and p[j][0] < 1):
+                    summ[j]= summ[j] + (float(1)/float(2))*math.log(p[j][1]/(1-p[j][1]))
+                else :
+                    summ[j] = summ[j] + 1*p[j][1] + (-1)*p[j][0]
+
         return (summ >= 0)*1 + (summ < 0)*(-1)
 
     def score(self, data, label):
@@ -49,8 +56,8 @@ class RealAdaboost:
         return np.mean((pred == label))
 
             
-        
-data, y = donneData("database/iris.data")
+# omfichier, nbLabel = 2, colonne = 4, suppress = False, colonneSup = 0):       
+data, y = donneData("database/wdbc.data", 2,1, True, 0 )
 print y
 ada = RealAdaboost(len(data), 100)
 ada.fit(data,y)
