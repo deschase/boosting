@@ -42,7 +42,6 @@ def donneData(nomfichier, nbLabel = 2, colonne = 4, suppress = False, colonneSup
                     i+=1
                 if(i == - 1):
                     i += 2
-
     labelTrue = []
 
     for label in labelText:
