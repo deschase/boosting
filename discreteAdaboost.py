@@ -59,7 +59,7 @@ class DiscreteAdaboost:
                 res += 1
         return res/float(self.nbdata)
 
-data, y = donneData("database/wdbc.data",2,1,True,0,True)
-ada = DiscreteAdaboost(len(data), 10)
-ada.fit(data,y)
-print "score final = ", ada.score(data, y)
+# data, y = donneData("database/wdbc.data",2,1,True,0,True)
+# ada = DiscreteAdaboost(len(data), 10)
+# ada.fit(data,y)
+# print "score final = ", ada.score(data, y)

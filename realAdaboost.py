@@ -1,6 +1,7 @@
 from arbre import *
 from readFiles import *
-import random as rd
+import matplotlib.pyplot as plt
+
 class RealAdaboost:
     def __init__(self, nbData, nbClassifieur):
         self.nbdata = nbData
@@ -17,16 +18,14 @@ class RealAdaboost:
             tree = create_tree(data, label, self.w)
             (self.trees).append(tree)
             p = tree.predict_proba(data)
-            print j, ": ", tree.score(data,y)
+            #print j, ": ", tree.score(data,y)
             summ = 0
             for i in range(self.nbdata):
                 if(p[i][0] > 0 and p[i][0] < 1):
                     self.w[i] = self.w[i]*math.exp(-label[i]*(float(1)/float(2))*math.log(p[i][1]/(1-p[i][1])))
-                    #print math.exp(-label[i]*(float(1)/float(2))*math.log(p[i][0]/(1-p[i][0])))
-                   # self.w[i] = 0.5
-                   # print self.w[i]
+                    
                 else:
-                    print "out"
+                    
                     self.w[i]  = 0#float(1)/float(self.nbdata)
 
 
@@ -47,7 +46,7 @@ class RealAdaboost:
                 if(p[j][0] > 0 and p[j][0] < 1):
                     summ[j]= summ[j] + (float(1)/float(2))*math.log(p[j][1]/(1-p[j][1]))
                 else :
-                    summ[j] = summ[j] + 1*p[j][1] + (-1)*p[j][0]
+                    summ[j] = summ[j] + (1/2)*p[j][1] + (-1/2)*p[j][0]
 
         return (summ >= 0)*1 + (summ < 0)*(-1)
 
@@ -57,10 +56,13 @@ class RealAdaboost:
 
             
 # omfichier, nbLabel = 2, colonne = 4, suppress = False, colonneSup = 0):       
-data, y = donneData("database/wdbc.data", 2,1, True, 0 )
-print y
-ada = RealAdaboost(len(data), 100)
-ada.fit(data,y)
-print ada.score(data, y)
-        
+# data, y = donneData("database/wdbc.data", 2,1, True, 0 )
+# print y
+# ada = RealAdaboost(len(data),800)
+# ada.fit(data,y)
+# print ada.score(data, y)
+       
+
+
+
 
