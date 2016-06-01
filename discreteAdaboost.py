@@ -42,26 +42,23 @@ class DiscreteAdaboost:
                 somme += self.w[i]
             for i in range(0,self.nbdata):
                 self.w[i] = self.w[i]/somme
-            print "score",arbre.score(data,y)
+            #print "score arbre {}".format(m),arbre.score(data,y)
+
+    def predict(self, data):
+        summ = np.zeros(len(data))
+        for i in range(self.nbclassifieur):
+            p = self.trees[i].predict(data)
+            for j in range(len(data)):
+                summ[j]= summ[j] + self.coefs[i]*p[j]
+        return (summ >= 0)*1 + (summ < 0)*(-1)
 
     def score(self, data, label):
-        results = []
-        for x in range(0,self.nbdata):
-            resx = 0
-            for j in range(0,self.nbclassifieur):
-                resx += self.coefs[j]*(self.trees[j].predict(data))[x]
-            if resx < 0:
-                results.append(-1)
-            else:
-                results.append(1)
-        res = 0
-        for i in range(0,self.nbdata):
-            if results[i] == label[i]:
-                res += 1
-        return res/float(self.nbdata)
+        pred = self.predict(data)
+        return np.mean((pred == label))
+
 
 data, y = donneData("database/wdbc.data",2,1,True,0,True)
-ada = DiscreteAdaboost(len(data)/2, 10)
+ada = DiscreteAdaboost(len(data)/2, 400)
 data_moit = data[0:ada.nbdata,:]
 y_moit = y[0:ada.nbdata]
 ada.fit(data_moit,y_moit)

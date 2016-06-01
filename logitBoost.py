@@ -31,20 +31,25 @@ class LogitBoost:
                 self.sol[k] += 0.5*pred[k]
             for k in range(0,self.nbdata):
                 self.p[k] = math.exp(self.sol[k])/(math.exp(self.sol[k]) + math.exp(-self.sol[k]))
-            print "score arbre {}".format(m),self.score(data,y)
+            # print "score arbre {}".format(m),self.score(data,y,m)
 
-    def score(self, data, label):
-        res = 0
-        for i in range(0,self.nbdata):
-            if self.sol[i] >= 0:
-                if label[i] == 1:
-                    res += 1
-            else:
-                if label[i] == -1:
-                    res += 1
-        return res/float(self.nbdata)
+    def predict(self, data, quant):
+        summ = np.zeros(len(data))
+        for i in range(quant):
+            p = self.trees[i].predict(data)
+            for j in range(len(data)):
+                summ[j]= summ[j] + p[j]
+        return (summ >= 0)*1 + (summ < 0)*(-1)
+
+    def score(self, data, label, quant):
+        pred = self.predict(data, quant)
+        return np.mean((pred == label))
+
 
 data, y = donneData("database/wdbc.data",2,1,True,0,True)
-ada = LogitBoost(len(data), 30)
-ada.fit(data,y)
-print "score final = ", ada.score(data, y)
+ada = LogitBoost(len(data)/2, 200)
+data_moit = data[0:ada.nbdata,:]
+y_moit = y[0:ada.nbdata]
+ada.fit(data_moit,y_moit)
+print "score final = ", ada.score(data, y,ada.nbclassifieur)
+
