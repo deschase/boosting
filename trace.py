@@ -9,8 +9,10 @@ def trace(boostChoisi, depart, arrivee, pas, data, y):
     for i in range(depart, arrivee, pas):
         print i , "sur ", arrivee
         if boostChoisi == "RealAdaboost":
-            ada = RealAdaboost(len(data),i)
-            ada.fit(data,y)
+            ada = RealAdaboost(len(data)/2,600)
+            data_moit = data[0:ada.nbdata,:]
+            y_moit = y[0:ada.nbdata]
+            ada.fit(data_moit,y_moit)
             tab.append(ada.score(data,y))
         if boostChoisi == "DiscreteAdaboost":
             ada = DiscreteAdaboost(len(data)/2, i)
@@ -47,3 +49,4 @@ def trace(boostChoisi, depart, arrivee, pas, data, y):
 data, y = donneData("database/wdbc.data", 2,1, True, 0 )
 
 trace("LogitBoost", 1, 300, 10, data, y)
+
