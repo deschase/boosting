@@ -17,8 +17,10 @@ class LogitBoost:
             # On calcule les z_i et les w_i
             for k in range(0,self.nbdata):
                 y_star = int((y[k] + 1)/2)
-                if self.p[k] == 1.:
+                if self.p[k] >= 0.99:
                     self.z[k] == 0.
+                elif self.p[k] <= 0.01:
+                    self.z[k] == 3
                 else:
                     self.z[k] = (y_star-self.p[k])/(self.p[k]*(1-self.p[k]))
                 self.w[k] = self.p[k]*(1-self.p[k])
@@ -31,6 +33,7 @@ class LogitBoost:
                 self.sol[k] += 0.5*pred[k]
             for k in range(0,self.nbdata):
                 self.p[k] = math.exp(self.sol[k])/(math.exp(self.sol[k]) + math.exp(-self.sol[k]))
+
             # print "score arbre {}".format(m),self.score(data,y,m)
 
     def predict(self, data, quant):
@@ -46,7 +49,7 @@ class LogitBoost:
         return np.mean((pred == label))
 
 
-data, y = donneData("database/wdbc.data",2,1,True,0,True)
+data, y = donneData("database/waveform-5000.data",2,1,True,0,True)
 ada = LogitBoost(len(data)/2, 200)
 data_moit = data[0:ada.nbdata,:]
 y_moit = y[0:ada.nbdata]
