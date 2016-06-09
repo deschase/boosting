@@ -57,9 +57,9 @@ class DiscreteAdaboost:
         return np.mean((pred == label))
 
 
-data, y = donneData("database/wdbc.data",2,1,True,0,True)
-ada = DiscreteAdaboost(len(data)/2, 400)
-data_moit = data[0:ada.nbdata,:]
-y_moit = y[0:ada.nbdata]
+data, y = donneData("database/glass.data",2,10,True,0,True)
+ada = DiscreteAdaboost(len(data)/2, 100)
+data_moit = data[0:len(data):2,:]
+y_moit = y[0:len(data):2]
 ada.fit(data_moit,y_moit)
 print "score final = ", ada.score(data, y)
