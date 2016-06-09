@@ -57,9 +57,11 @@ class DiscreteAdaboost:
         return np.mean((pred == label))
 
 
-data, y = donneData("database/glass.data",2,10,True,0,True)
-ada = DiscreteAdaboost(len(data)/2, 100)
-data_moit = data[0:len(data):2,:]
-y_moit = y[0:len(data):2]
+
+# omfichier, nbLabel = 2, colonne = 4, suppress = False, colonneSup = 0, sensdirect = True):
+data, y = donneData("database/waveform-5000.data",2,40)
+ada = DiscreteAdaboost(len(data)/2, 10)
+data_moit = data[0:ada.nbdata,:]
+y_moit = y[0:ada.nbdata]
 ada.fit(data_moit,y_moit)
 print "score final = ", ada.score(data, y)

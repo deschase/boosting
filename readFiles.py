@@ -11,12 +11,12 @@ def ouvreEtLit(nomfichier):
             words = line.rstrip('\n').split(',')
             if words != ['']:
                 tableau.append(words)
-
+    
     return np.asarray(tableau)
 
 def donneData(nomfichier, nbLabel = 2, colonne = 4, suppress = False, colonneSup = 0,sensdirect = True):
     tableau = ouvreEtLit(nomfichier)
-    labelText = tableau[:, colonne]
+    labelText = tableau[:,colonne]
     data = np.delete(tableau, colonne, axis=1)
     if suppress:
         data = np.delete(data, colonneSup, axis=1)
